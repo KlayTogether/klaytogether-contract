@@ -1,0 +1,23 @@
+name: settle-round
+on:
+  schedule:
+    - cron: '10 9 * * *'
+jobs:
+  settle-round:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install
+      - name: Generate Environment Variables File for Production
+        run: |
+            echo "DEPLOYER_PK=$DEPLOYER_PK" >> .env
+            echo "KLAY_PRIZE_CALCULATOR=$KLAY_PRIZE_CALCULATOR" >> .env
+            echo "KUSDT_PRIZE_CALCULATOR=$KUSDT_PRIZE_CALCULATOR" >> .env
+        env:
+          DEPLOYER_PK: ${{ secrets.DEPLOYER_PK }}
+          KLAY_PRIZE_CALCULATOR: ${{ secrets.KLAY_PRIZE_CALCULATOR }}
+          KUSDT_PRIZE_CALCULATOR: ${{ secrets.KUSDT_PRIZE_CALCULATOR }}
+      - run: npm run settle
